@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lauffreund · Prototyp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16202E; --muted:#6B7480; --line:#E7EAEF;
+    --page:#EDEFF3; --surface:#FFFFFF; --surface-2:#F6F7F9;
+    --go:#15B85B; --go-ink:#0B7D3C;
+    --live:#FF5247; --live-bg:#FFE9E7;
+    --display:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --body:ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--page);color:var(--ink);font-family:var(--body);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    padding:24px 16px 40px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .brand{display:flex;align-items:center;gap:9px;margin-bottom:14px;color:var(--ink)}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--go)}
+  .brand b{font-family:var(--display);font-weight:600;letter-spacing:-.01em;font-size:17px}
+  .brand span{color:var(--muted);font-size:13px}
+
+  .phone{width:100%;max-width:412px;background:var(--surface);border-radius:30px;
+    border:1px solid var(--line);box-shadow:0 18px 50px rgba(22,32,46,.14);overflow:hidden;
+    display:flex;flex-direction:column;min-height:760px}
+  .top{padding:18px 18px 12px;border-bottom:1px solid var(--line);display:flex;
+    align-items:center;justify-content:space-between;gap:10px}
+  .top h1{font-family:var(--display);font-size:18px;font-weight:600;margin:0;letter-spacing:-.01em}
+  .top .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .live{display:inline-flex;align-items:center;gap:6px;background:var(--live-bg);
+    color:var(--live);font-size:11px;font-weight:600;padding:5px 10px;border-radius:20px;flex-shrink:0}
+  .live .pulse{width:7px;height:7px;border-radius:50%;background:var(--live);
+    animation:pulse 1.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,82,71,.5)}70%{box-shadow:0 0 0 7px rgba(255,82,71,0)}100%{box-shadow:0 0 0 0 rgba(255,82,71,0)}}
+
+  .screen{display:none;flex:1;flex-direction:column}
+  .screen.active{display:flex}
+  .body{padding:16px 16px 8px;flex:1;overflow:auto}
+
+  /* map */
+  .map{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    background:var(--surface-2);height:208px;margin-bottom:14px}
+  .map svg{position:absolute;inset:0;width:100%;height:100%}
+  .marker{position:absolute;transform:translate(-50%,-50%);transition:left .9s linear,top .9s linear;
+    display:flex;flex-direction:column;align-items:center;pointer-events:none}
+  .marker .pin{width:26px;height:26px;border-radius:50%;border:2.5px solid #fff;
+    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;
+    box-shadow:0 2px 6px rgba(0,0,0,.22)}
+  .marker .tag{margin-top:3px;font-size:10px;font-weight:600;background:#fff;color:var(--ink);
+    padding:1px 6px;border-radius:6px;border:1px solid var(--line);white-space:nowrap}
+
+  /* runner rows */
+  .row{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);
+    border-radius:13px;margin-bottom:9px;background:var(--surface)}
+  .row.off{border-style:dashed;background:var(--surface-2)}
+  .av{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
+    justify-content:center;font-size:12px;font-weight:700;color:#fff}
+  .row .nm{flex:1;min-width:0}
+  .row .nm b{font-size:14px;font-weight:600;display:block}
+  .row .nm small{font-size:12px;color:var(--muted)}
+  .row .eta{text-align:right;flex-shrink:0}
+  .row .eta b{font-family:var(--display);font-size:15px;font-weight:600;display:block}
+  .row .eta small{font-size:10px;color:var(--muted)}
+  .nudge{border:1px solid var(--line);background:#fff;border-radius:9px;width:34px;height:34px;
+    flex-shrink:0;font-size:15px;cursor:pointer;color:var(--muted)}
+  .nudge:active{transform:scale(.94)}
+
+  /* mein rennen */
+  .field{margin-bottom:14px}
+  .field label{font-size:12px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px}
+  select,.linkbox{width:100%;font-family:var(--body);font-size:14px;padding:11px 12px;
+    border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
+  .racecard{border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:6px}
+  .racecard b{font-size:14px}
+  .racecard small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+  .count{text-align:center;padding:22px 0 18px}
+  .count .lab{font-size:12px;color:var(--muted);margin-bottom:4px}
+  .count .big{font-family:var(--display);font-size:42px;font-weight:600;line-height:1;letter-spacing:-.02em}
+  .cta{width:100%;border:none;border-radius:13px;padding:15px;font-family:var(--body);
+    font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .cta.go{background:var(--go);color:#fff}
+  .cta.stop{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .cta:active{transform:scale(.985)}
+  .hint{font-size:11px;color:var(--muted);text-align:center;margin:10px 6px 0;line-height:1.5}
+  .friends{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:14px;
+    padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+
+  /* crew */
+  .qrwrap{display:flex;flex-direction:column;align-items:center;text-align:center;
+    border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px}
+  #qr{width:152px;height:152px;display:flex;align-items:center;justify-content:center}
+  #qr img,#qr canvas{border-radius:8px}
+  .qrwrap p{font-size:13px;color:var(--muted);margin:13px 0 0;max-width:240px}
+  .share{display:flex;gap:8px;margin-bottom:6px}
+  .share .linkbox{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .share button{border:1px solid var(--line);background:#fff;border-radius:11px;padding:0 14px;
+    font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
+  .seclabel{font-size:12px;color:var(--muted);font-weight:600;margin:4px 2px 9px}
+
+  /* nav */
+  .nav{display:flex;border-top:1px solid var(--line);background:#fff}
+  .nav button{flex:1;border:none;background:none;padding:12px 4px 14px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:11px;font-weight:600}
+  .nav button .ic{font-size:18px;line-height:1}
+  .nav button.active{color:var(--go-ink)}
+
+  .toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:500;
+    opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .note{max-width:412px;font-size:12px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6}
+  @media (prefers-reduced-motion:reduce){.marker{transition:none}.live .pulse{animation:none}}
+</style>
+</head>
+<body>
+  <div class="brand"><span class="dot"></span><b>Lauffreund</b><span>Prototyp · Testversion</span></div>
+
+  <div class="phone">
+    <div class="top">
+      <div>
+        <h1 id="topTitle">Berlin-Marathon</h1>
+        <div class="sub" id="topSub">3 aus deiner Crew laufen</div>
+      </div>
+      <div class="live"><span class="pulse"></span>live</div>
+    </div>
+
+    <!-- BOARD -->
+    <section class="screen active" id="s-board">
+      <div class="body">
+        <div class="map" id="map">
+          <svg viewBox="0 0 380 208" preserveAspectRatio="none">
+            <path id="course" d="M24,176 C70,150 60,96 120,92 C180,88 168,40 232,44 C290,48 300,120 356,96"
+                  fill="none" stroke="#CBD2DC" stroke-width="6" stroke-linecap="round"/>
+            <path d="M24,176 C70,150 60,96 120,92 C180,88 168,40 232,44 C290,48 300,120 356,96"
+                  fill="none" stroke="#15B85B" stroke-width="6" stroke-linecap="round"
+                  stroke-dasharray="6 10" opacity=".35"/>
+            <circle cx="24" cy="176" r="5" fill="#16202E"/>
+            <circle cx="356" cy="96" r="6" fill="#FF5247"/>
+          </svg>
+        </div>
+        <div id="crewList"></div>
+      </div>
+    </section>
+
+    <!-- MEIN RENNEN -->
+    <section class="screen" id="s-race">
+      <div class="body">
+        <div class="field">
+          <label>Welches Rennen läufst du?</label>
+          <select id="raceSelect"></select>
+        </div>
+        <div class="racecard" id="raceCard"></div>
+        <div class="count">
+          <div class="lab">Start in</div>
+          <div class="big" id="countdown">14:00</div>
+        </div>
+        <button class="cta go" id="trackBtn">Tracking aktivieren</button>
+        <div class="hint">Teilt deinen Live-Standort nur mit deiner Crew. Stoppt automatisch im Ziel.</div>
+        <div class="friends">3 Freunde wollen dich verfolgen</div>
+      </div>
+    </section>
+
+    <!-- CREW -->
+    <section class="screen" id="s-crew">
+      <div class="body">
+        <div class="qrwrap">
+          <div id="qr"></div>
+          <p>Scann mich, um der Crew beizutreten – ideal vor Ort im Startbereich.</p>
+        </div>
+        <div class="seclabel">Oder teile den Link in eurem Gruppenchat</div>
+        <div class="share">
+          <div class="linkbox" id="inviteLink">lauffreund.app/c/berlin-crew-7QF2</div>
+          <button id="copyBtn">Kopieren</button>
+        </div>
+        <div class="seclabel" style="margin-top:18px">Wer ist dabei</div>
+        <div id="crewRoster"></div>
+      </div>
+    </section>
+
+    <nav class="nav">
+      <button class="active" data-screen="s-board"><span class="ic">◎</span>Board</button>
+      <button data-screen="s-race"><span class="ic">▲</span>Mein Rennen</button>
+      <button data-screen="s-crew"><span class="ic">⛌</span>Crew</button>
+    </nav>
+  </div>
+
+  <div class="note">Erste testbare Version. Die Live-Bewegung ist hier simuliert – in der echten App
+    kommt sie vom GPS des laufenden Freundes. Tipp: Geh auf „Mein Rennen" und aktiviere dein Tracking,
+    dann erscheinst du selbst auf dem Board.</div>
+
+  <div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const COLORS=['#3D6FE0','#E0683D','#7A48C7','#16202E'];
+const TOTAL=42.195;
+
+// crew: pace in sec/km, startedMinAgo = wie lange schon unterwegs
+let runners=[
+  {id:'tom', name:'Tom', color:'#3D6FE0', pace:308, started:165, active:true},
+  {id:'lena',name:'Lena',color:'#E0683D', pace:290, started:101, active:true},
+  {id:'jonas',name:'Jonas',color:'#7A48C7', pace:300, started:0,  active:false},
+];
+
+const races=[
+  {id:'berlin-marathon', name:'BMW Berlin-Marathon', date:'27.09.2026', city:'Berlin', dist:'42,195 km'},
+  {id:'ssr-berlin', name:'SportScheck RUN Berlin', date:'17.10.2026', city:'Berlin', dist:'5 / 10 / 21,1 km'},
+  {id:'ssr-koeln', name:'SportScheck RUN Köln', date:'11.09.2026', city:'Köln', dist:'5 / 10 / 21,1 km'},
+  {id:'ssr-muenchen', name:'SportScheck RUN München', date:'05.07.2026', city:'München', dist:'5 / 10 / 21,1 km'},
+  {id:'berliner-hm', name:'Generali Berliner Halbmarathon', date:'29.03.2026', city:'Berlin', dist:'21,1 km'},
+];
+
+const courseEl=document.getElementById('course');
+const mapEl=document.getElementById('map');
+const len=courseEl.getTotalLength();
+let t0=Date.now();
+
+function fmtPace(s){const m=Math.floor(s/60),sec=Math.round(s%60);return m+':'+String(sec).padStart(2,'0');}
+function fmtEta(s){s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  return h>0?h+':'+String(m).padStart(2,'0')+' h':m+' Min';}
+
+function state(r){
+  const elapsed=r.started*60 + (Date.now()-t0)/1000;       // Sekunden unterwegs
+  const km=Math.min(TOTAL, elapsed/r.pace);
+  const jitter=r.active?(Math.sin(Date.now()/4000+r.pace)*6):0;
+  const pace=r.pace+jitter;
+  const remain=(TOTAL-km)*pace;
+  return {km, pace, remain, frac:km/TOTAL, done:km>=TOTAL};
+}
+
+function renderCrew(){
+  const list=document.getElementById('crewList');
+  const active=runners.filter(r=>r.active);
+  document.getElementById('topSub').textContent=active.length+' aus deiner Crew '+(active.length===1?'läuft':'laufen');
+  list.innerHTML='';
+  runners.forEach(r=>{
+    const row=document.createElement('div');
+    if(!r.active){
+      row.className='row off';
+      row.innerHTML=`<div class="av" style="background:#AEB4BE">${initials(r.name)}</div>
+        <div class="nm"><b style="color:var(--muted)">${r.name}</b><small>Tracking aus — kein Signal</small></div>
+        <button class="nudge" title="anstupsen">🔔</button>`;
+      row.querySelector('.nudge').onclick=()=>toast(r.name+' wurde angestupst');
+    }else{
+      const s=state(r);
+      row.className='row';
+      row.innerHTML=`<div class="av" style="background:${r.color}">${initials(r.name)}</div>
+        <div class="nm"><b>${r.name}</b><small>km ${s.km.toFixed(1)} · ${fmtPace(s.pace)}/km</small></div>
+        <div class="eta"><b>${s.done?'Im Ziel':'~'+fmtEta(s.remain)}</b><small>${s.done?'fertig':'bis Ziel'}</small></div>`;
+    }
+    list.appendChild(row);
+  });
+}
+function initials(n){return n.slice(0,2).toUpperCase();}
+
+function renderMarkers(){
+  document.querySelectorAll('.marker').forEach(m=>m.remove());
+  const rect=mapEl.getBoundingClientRect();
+  runners.filter(r=>r.active).forEach(r=>{
+    const s=state(r);
+    const pt=courseEl.getPointAtLength(Math.min(len,len*s.frac));
+    const x=(pt.x/380)*rect.width, y=(pt.y/208)*rect.height;
+    const m=document.createElement('div');
+    m.className='marker';m.style.left=x+'px';m.style.top=y+'px';
+    m.innerHTML=`<div class="pin" style="background:${r.color}">${initials(r.name)}</div>
+      <div class="tag">${r.name} · km ${s.km.toFixed(0)}</div>`;
+    mapEl.appendChild(m);
+  });
+}
+
+// MEIN RENNEN
+const sel=document.getElementById('raceSelect');
+races.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' · '+r.city;sel.appendChild(o);});
+function renderRaceCard(){
+  const r=races.find(x=>x.id===sel.value);
+  document.getElementById('raceCard').innerHTML=`<b>${r.name}</b><small>${r.dist} · ${r.city} · ${r.date} · Startnummer 12345</small>`;
+}
+sel.onchange=renderRaceCard; renderRaceCard();
+
+let cd=14*60;
+setInterval(()=>{ if(cd>0){cd--;} const m=Math.floor(cd/60),s=cd%60;
+  document.getElementById('countdown').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+},1000);
+
+const meBtn=document.getElementById('trackBtn');
+meBtn.onclick=()=>{
+  const me=runners.find(r=>r.id==='me');
+  if(!me){
+    runners.push({id:'me',name:'Du',color:'#15B85B',pace:312,started:0.2,active:true});
+    meBtn.textContent='Tracking beenden';meBtn.className='cta stop';
+    toast('Tracking aktiv – du bist jetzt auf dem Board');
+    renderCrew();renderMarkers();
+    document.querySelector('[data-screen="s-board"]').click();
+  }else{
+    runners=runners.filter(r=>r.id!=='me');
+    meBtn.textContent='Tracking aktivieren';meBtn.className='cta go';
+    toast('Tracking beendet');renderCrew();renderMarkers();
+  }
+};
+
+// CREW
+const inviteText='https://lauffreund.app/c/berlin-crew-7QF2';
+new QRCode(document.getElementById('qr'),{text:inviteText,width:152,height:152,colorDark:'#16202E',colorLight:'#ffffff'});
+document.getElementById('copyBtn').onclick=()=>{
+  navigator.clipboard&&navigator.clipboard.writeText(inviteText);toast('Einladungslink kopiert');
+};
+const roster=document.getElementById('crewRoster');
+[['Tom','#3D6FE0'],['Lena','#E0683D'],['Jonas','#7A48C7'],['Du','#15B85B']].forEach(([n,c])=>{
+  const d=document.createElement('div');d.className='row';
+  d.innerHTML=`<div class="av" style="background:${c}">${n.slice(0,2).toUpperCase()}</div>
+    <div class="nm"><b>${n}</b><small>${n==='Du'?'das bist du':'in der Crew'}</small></div>`;
+  roster.appendChild(d);
+});
+
+// nav
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');document.getElementById(b.dataset.screen).classList.add('active');
+});
+
+let toastT;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2200);}
+
+renderCrew();
+setTimeout(renderMarkers,60);
+setInterval(()=>{renderCrew();renderMarkers();},1000);
+window.addEventListener('resize',renderMarkers);
+</script>
+</body>
+</html>

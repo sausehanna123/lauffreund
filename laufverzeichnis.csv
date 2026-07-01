@@ -1,0 +1,35 @@
+event_id,name,date,city,country,distances_km,recurrence,status,note
+sportscheck-run-muenchen,SportScheck RUN München,2026-07-05,München,DE,5 | 10 | 21.1,"jährlich, Anfang Juli",bestätigt,"Stadtlaufserie, Sponsor Brooks"
+sportscheck-run-koeln,SportScheck RUN Köln,2026-09-11,Köln,DE,5 | 10 | 21.1,"jährlich, September",bestätigt,Stadtlaufserie
+sportscheck-run-hannover,SportScheck RUN Hannover,2026-09-18,Hannover,DE,5 | 10 | 21.1,"jährlich, September",bestätigt,Stadtlaufserie
+sportscheck-run-berlin,SportScheck RUN Berlin,2026-10-17,Berlin,DE,5 | 10 | 21.1,"jährlich, Oktober",bestätigt,"Nachtlauf, Tempelhofer Feld"
+sportscheck-run-nuernberg,SportScheck RUN Nürnberg,2026-10-25,Nürnberg,DE,5 | 10 | 21.1,"jährlich, Oktober",bestätigt,Stadtlaufserie
+sportscheck-run-hamburg,SportScheck RUN Hamburg,2027-06-18,Hamburg,DE,5 | 10 | 21.1,"jährlich, Juni",bestätigt,nächste Auflage 2027; 2026er Edition bereits gelaufen
+berlin-marathon,BMW Berlin-Marathon,2026-09-27,Berlin,DE,42.195,"jährlich, letztes So. September",bestätigt,World Marathon Major; Veranstalter SCC Events
+frankfurt-marathon,Mainova Frankfurt Marathon,2026-10-25,Frankfurt am Main,DE,42.195,"jährlich, Ende Oktober",zu prüfen,"Datum laut Kalender, final bestätigen"
+koeln-marathon,Generali Köln Marathon,2026-10-04,Köln,DE,42.195 | 21.1,"jährlich, erster So. Oktober",zu prüfen,Datum geschätzt nach Muster
+muenchen-marathon,Marathon München,2026-10-11,München,DE,42.195 | 21.1,"jährlich, zweiter So. Oktober",zu prüfen,Sponsor Brooks; Datum geschätzt
+hamburg-marathon,Haspa Marathon Hamburg,,Hamburg,DE,42.195,"jährlich, Ende April",zu prüfen,"größter Frühjahrsmarathon DE; 2026 bereits gelaufen, 2027er Datum eintragen"
+hannover-marathon,ADAC Marathon Hannover,,Hannover,DE,42.195 | 21.1,"jährlich, Anfang April",zu prüfen,Frühjahr; Datum eintragen
+duesseldorf-marathon,Düsseldorf Marathon,,Düsseldorf,DE,42.195 | 21.1,"jährlich, April",zu prüfen,Frühjahr; Datum eintragen
+vienna-city-marathon,Vienna City Marathon,,Wien,AT,42.195 | 21.1,"jährlich, April",zu prüfen,größter Lauf Österreichs
+zuerich-marathon,Zürich Marathon,,Zürich,CH,42.195 | 21.1,"jährlich, April",zu prüfen,Datum eintragen
+london-marathon,TCS London Marathon,,London,GB,42.195,"jährlich, April",zu prüfen,World Marathon Major
+boston-marathon,Boston Marathon,,Boston,US,42.195,"jährlich, dritter Mo. April (Patriots' Day)",zu prüfen,World Marathon Major
+chicago-marathon,Bank of America Chicago Marathon,2026-10-11,Chicago,US,42.195,"jährlich, zweiter So. Oktober",zu prüfen,World Marathon Major; Datum geschätzt
+nyc-marathon,TCS New York City Marathon,2026-11-01,New York,US,42.195,"jährlich, erster So. November",zu prüfen,World Marathon Major; Datum geschätzt
+tokyo-marathon,Tokyo Marathon,,Tokio,JP,42.195,"jährlich, Anfang März",zu prüfen,World Marathon Major
+sydney-marathon,Sydney Marathon,,Sydney,AU,42.195,"jährlich, August/September",zu prüfen,World Marathon Major
+paris-marathon,Schneider Electric Marathon de Paris,,Paris,FR,42.195,"jährlich, April",zu prüfen,Datum eintragen
+amsterdam-marathon,TCS Amsterdam Marathon,,Amsterdam,NL,42.195 | 21.1,"jährlich, Oktober",zu prüfen,Datum eintragen
+valencia-marathon,Valencia Marathon,,Valencia,ES,42.195,"jährlich, Anfang Dezember",zu prüfen,schnelle Strecke
+copenhagen-half,Copenhagen Half Marathon,,Kopenhagen,DK,21.1,"jährlich, September",zu prüfen,großer Halbmarathon; Datum eintragen
+berliner-halbmarathon,Generali Berliner Halbmarathon,2026-03-29,Berlin,DE,21.1,"jährlich, Ende März",bestätigt,"eigenständig; Saisonauftakt, ~40.000 Läufer"
+gutenberg-halbmarathon-mainz,Gutenberg Halbmarathon Mainz,2026-05-10,Mainz,DE,10 | 21.1,"jährlich, Mai",zu prüfen,eigenständig seit 2024; Datum laut Kalender
+frankfurt-city-halbmarathon,Frankfurt City Halbmarathon,,Frankfurt am Main,DE,21.1,"jährlich, Frühjahr",zu prüfen,eigenständig; Datum eintragen
+hamburg-halbmarathon,Hamburg Halbmarathon,,Hamburg,DE,21.1,"jährlich, Frühsommer",zu prüfen,eigenständig; Datum eintragen
+stuttgart-lauf-halb,Stuttgart-Lauf (Halbmarathon),,Stuttgart,DE,21.1,"jährlich, Juni",zu prüfen,"HM-Bewerb zuletzt nicht immer ausgetragen, prüfen"
+the-big-half-london,The Big Half,,London,GB,21.1,"jährlich, September",zu prüfen,eigenständiger Großstadt-Halbmarathon
+valencia-half,Medio Maratón Valencia,,Valencia,ES,21.1,"jährlich, Oktober",zu prüfen,sehr schnelle Strecke
+lisbon-half,Meia Maratona de Lisboa,,Lissabon,PT,21.1,"jährlich, März",zu prüfen,über die Ponte 25 de Abril
+prague-half,Prague Half Marathon,,Prag,CZ,21.1,"jährlich, April",zu prüfen,Datum eintragen
