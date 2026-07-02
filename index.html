@@ -98,6 +98,12 @@
   .hint{font-size:11px;color:var(--muted);text-align:center;margin:10px 6px 0;line-height:1.5}
   .friends{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:14px;
     padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .cheer{display:none;align-items:center;gap:10px;background:#EAF3FE;border:1px solid #CFE4FB;
+    border-radius:13px;padding:11px 13px;margin-bottom:13px}
+  .cheer.on{display:flex}
+  .cheer .em{font-size:19px;line-height:1}
+  .cheer .txt{font-size:13px;color:var(--ink)}
+  .cheer .txt b{font-family:var(--display);font-weight:600}
 
   /* crew */
   .qrwrap{display:flex;flex-direction:column;align-items:center;text-align:center;
@@ -326,6 +332,7 @@
     <!-- BOARD -->
     <section class="screen active" id="s-board">
       <div class="body">
+        <div class="cheer" id="cheerBanner"><span class="em">📣</span><span class="txt"><b>3</b> feuern dich an</span></div>
         <div class="map" id="map">
           <svg viewBox="0 0 380 208" preserveAspectRatio="none">
             <path id="course" d="M24,176 C70,150 60,96 120,92 C180,88 168,40 232,44 C290,48 300,120 356,96"
@@ -366,7 +373,7 @@
         </div>
         <button class="cta go" id="trackBtn">Tracking aktivieren</button>
         <div class="hint">Teilt deinen Live-Standort nur mit deiner Crew. Stoppt automatisch im Ziel.</div>
-        <div class="friends">3 Freunde wollen dich verfolgen</div>
+        <div class="friends" id="friendCount">3 Freunde wollen dich verfolgen</div>
       </div>
     </section>
 
@@ -542,12 +549,14 @@ meBtn.onclick=()=>{
     const g=readGoal();
     runners.push(Object.assign({id:'me',name:'Du',color:'#3B8FE5',pace:312,started:0.2,active:true},g));
     meBtn.textContent='Tracking beenden';meBtn.className='cta stop';
+    tracking=true; startCheers(); renderSupporters();
     toast(g.goalType==='time'?'Tracking aktiv – Ziel '+fmtEta(g.goalSec):'Tracking aktiv – Ziel '+g.goalKm+' km');
     renderCrew();renderMarkers();
     document.querySelector('[data-screen="s-board"]').click();
   }else{
     runners=runners.filter(r=>r.id!=='me');
     meBtn.textContent='Tracking aktivieren';meBtn.className='cta go';
+    tracking=false; stopCheers(); renderSupporters();
     toast('Tracking beendet');renderCrew();renderMarkers();
   }
 };
@@ -574,11 +583,32 @@ function renderRoster(){
   });
 }
 renderRoster();
+
+// Anzahl der Anfeuernden (Läufer-Sicht)
+let supporters=3, tracking=false, cheerTimer=null;
+const cheerNames=['Tom','Lena','Jonas','Maja','Ben'];
+function renderSupporters(){
+  const f=document.getElementById('friendCount');
+  if(f) f.textContent = tracking ? (supporters+' feuern dich gerade an') : (supporters+' Freunde wollen dich verfolgen');
+  const b=document.getElementById('cheerBanner');
+  if(b){ b.classList.toggle('on',tracking); b.querySelector('.txt').innerHTML='<b>'+supporters+'</b> feuern dich an'; }
+}
+function startCheers(){
+  stopCheers();
+  cheerTimer=setInterval(()=>{
+    if(!tracking) return;
+    const who=cheerNames[Math.floor(Math.random()*cheerNames.length)];
+    toast('📣 '+who+' feuert dich an');
+  },9000);
+}
+function stopCheers(){ if(cheerTimer){clearInterval(cheerTimer);cheerTimer=null;} }
+
 function joinCrew(name){
   name=(name||'').trim()||'Du';
   const palette=['#15A0A6','#C7488F','#5B8A2B','#2B6AA6','#B0632A'];
   crewMembers.push({name, color:palette[crewMembers.length % palette.length], note:'du · feuerst an'});
   renderRoster();
+  supporters++; renderSupporters();          // ein Beitritt = einer mehr, der mitfiebert
   return name;
 }
 
@@ -594,6 +624,7 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
   clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2200);}
 
 renderCrew();
+renderSupporters();
 setTimeout(renderMarkers,60);
 setInterval(()=>{renderCrew();renderMarkers();},1000);
 window.addEventListener('resize',renderMarkers);
