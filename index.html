@@ -124,12 +124,197 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .note{max-width:412px;font-size:12px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6}
   @media (prefers-reduced-motion:reduce){.marker{transition:none}.live .pulse{animation:none}}
+
+  /* --- Onboarding + Einladung --- */
+  .phone{position:relative}
+  .ob{position:absolute;inset:0;background:var(--surface);z-index:60;display:flex;flex-direction:column}
+  .ob.hidden{display:none}
+  .ob-body{flex:1;overflow:auto;padding:26px 22px 22px;display:flex;flex-direction:column}
+  .ob-step{display:none;flex:1;flex-direction:column}
+  .ob-step.active{display:flex}
+  .ob-logo{display:flex;align-items:center;gap:8px}
+  .ob-logo .dot{width:10px;height:10px;border-radius:50%;background:var(--go)}
+  .ob-logo b{font-family:var(--display);font-weight:600;font-size:15px}
+  .ob h2{font-family:var(--display);font-size:25px;line-height:1.16;letter-spacing:-.02em;margin:24px 0 10px}
+  .ob p.lead{font-size:14px;color:var(--muted);margin:0 0 8px;max-width:300px}
+  .ob-spacer{flex:1;min-height:18px}
+  .choice{display:flex;flex-direction:column;gap:10px;margin:6px 0 4px}
+  .choice button{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);
+    background:#fff;border-radius:14px;padding:14px;font-family:var(--body);cursor:pointer;width:100%}
+  .choice button.sel{border-color:var(--go);box-shadow:0 0 0 2px rgba(59,143,229,.18)}
+  .choice .cic{width:42px;height:42px;border-radius:12px;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .choice b{display:block;font-size:15px}
+  .choice small{display:block;color:var(--muted);font-size:12px;margin-top:2px;line-height:1.4}
+  .choice button:active{transform:scale(.99)}
+  .ob .cta{margin-top:14px}
+  .ob-skip{background:none;border:none;color:var(--muted);font-size:13px;font-weight:600;
+    cursor:pointer;padding:12px 0 2px;font-family:var(--body)}
+  .dots{display:flex;gap:6px;justify-content:center;margin-top:16px}
+  .dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+  .dots i.on{background:var(--go)}
+  .obqr{display:flex;flex-direction:column;align-items:center;text-align:center;
+    border:1px solid var(--line);border-radius:16px;padding:18px;margin:6px 0 14px}
+  .obqr #obQr{width:130px;height:130px}
+  .obqr #obQr img,.obqr #obQr canvas{border-radius:8px}
+  .obqr p{font-size:12px;color:var(--muted);margin:11px 0 0;max-width:230px}
+  .sharebtns{display:flex;flex-direction:column;gap:9px}
+  .sharebtns button{border-radius:12px;padding:13px;font-family:var(--body);font-size:14px;
+    font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+  .sharebtns .wa{background:#25D366;color:#fff;border:none}
+  .sharebtns button:active{transform:scale(.99)}
+  .previewlink{text-align:center;margin-top:14px}
+  .previewlink button{background:none;border:none;color:var(--go-ink);font-weight:600;font-size:13px;
+    cursor:pointer;font-family:var(--body);text-decoration:underline;text-underline-offset:2px}
+
+  .invite{position:absolute;inset:0;background:var(--surface);z-index:70;display:none;flex-direction:column}
+  .invite.show{display:flex}
+  .invite-top{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .invite-top .dot{width:9px;height:9px;border-radius:50%;background:var(--go)}
+  .invite-top b{font-family:var(--display);font-size:14px}
+  .invite-top .x{margin-left:auto;background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer}
+  .ib{flex:1;overflow:auto;padding:22px}
+  .ib .who{font-size:13px;color:var(--muted);margin:0 0 4px}
+  .ib h3{font-family:var(--display);font-size:21px;line-height:1.2;letter-spacing:-.01em;margin:0 0 16px}
+  .livecard{border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+  .livecard .lc-top{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+  .livecard .eta b{font-family:var(--display);font-size:16px;display:block}
+  .livecard .eta small{font-size:10px;color:var(--muted)}
+  .bar{height:8px;border-radius:6px;background:var(--surface-2);overflow:hidden}
+  .bar>span{display:block;height:100%;background:var(--go);border-radius:6px;transition:width .9s linear}
+  .barlab{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:7px}
 </style>
 </head>
 <body>
   <div class="brand"><span class="dot"></span><b>Lauffreund</b><span>Prototyp · Testversion</span></div>
 
   <div class="phone">
+
+    <!-- ONBOARDING -->
+    <div class="ob" id="ob">
+      <div class="ob-body">
+
+        <!-- Schritt 1: Willkommen -->
+        <section class="ob-step active" id="ob-1">
+          <div class="ob-logo"><span class="dot"></span><b>Lauffreund</b></div>
+          <div class="ob-spacer"></div>
+          <h2>Feuer deine Crew an – live, beim selben Rennen.</h2>
+          <p class="lead">Seht euch gegenseitig auf einem Board: wer läuft, wie weit, wie schnell, wann im Ziel. Ohne fünf Veranstalter-Apps.</p>
+          <div class="ob-spacer"></div>
+          <button class="cta go" data-go="ob-2">Los geht's</button>
+          <div class="previewlink"><button id="obPreviewBtn">Ich wurde eingeladen →</button></div>
+          <div class="dots"><i class="on"></i><i></i><i></i></div>
+        </section>
+
+        <!-- Schritt 2: Rolle -->
+        <section class="ob-step" id="ob-2">
+          <div class="ob-logo"><span class="dot"></span><b>Lauffreund</b></div>
+          <h2>Wie bist du dabei?</h2>
+          <p class="lead">Beides geht später zusammen – du kannst laufen und anfeuern.</p>
+          <div class="choice" id="roleChoice">
+            <button data-role="runner"><span class="cic">🏃</span><span><b>Ich laufe</b><small>Ich habe ein Rennen und will, dass meine Crew mitfiebert.</small></span></button>
+            <button data-role="fan"><span class="cic">📣</span><span><b>Ich feuere an</b><small>Ich will Freunde live verfolgen und anfeuern.</small></span></button>
+          </div>
+          <div class="ob-spacer"></div>
+          <button class="cta go" id="roleNext" data-go="ob-3" disabled style="opacity:.5">Weiter</button>
+          <button class="ob-skip" data-go="ob-1">Zurück</button>
+          <div class="dots"><i></i><i class="on"></i><i></i></div>
+        </section>
+
+        <!-- Schritt 3a: Läufer – Rennen + Ziel -->
+        <section class="ob-step" id="ob-3">
+          <div class="ob-logo"><span class="dot"></span><b>Lauffreund</b></div>
+          <h2>Dein Rennen</h2>
+          <p class="lead">Wähl dein Event und dein Ziel. Getrackt wird erst am Renntag – mit einem Tap.</p>
+          <div class="field" style="margin-top:6px">
+            <label>Welches Rennen?</label>
+            <select id="obRaceSelect"></select>
+          </div>
+          <div class="field">
+            <label>Dein Ziel</label>
+            <div class="seg" id="obGoalSeg">
+              <button type="button" data-mode="km" class="on">Kilometer</button>
+              <button type="button" data-mode="time">Zeit</button>
+            </div>
+            <div class="goalinput">
+              <input id="obGoalVal" inputmode="decimal" placeholder="z. B. 10">
+              <span class="unit" id="obGoalUnit">km</span>
+            </div>
+          </div>
+          <div class="ob-spacer"></div>
+          <button class="cta go" data-go="ob-4">Weiter</button>
+          <button class="ob-skip" data-go="ob-2">Zurück</button>
+          <div class="dots"><i></i><i></i><i class="on"></i></div>
+        </section>
+
+        <!-- Schritt 4: Crew einladen -->
+        <section class="ob-step" id="ob-4">
+          <div class="ob-logo"><span class="dot"></span><b>Lauffreund</b></div>
+          <h2 id="obInviteTitle">Hol deine Laufgruppe rein</h2>
+          <p class="lead" id="obInviteLead">Teile den Link in eurem Gruppenchat – oder lass vor Ort scannen. Wer beitritt, landet direkt auf eurem Board.</p>
+          <div class="obqr">
+            <div id="obQr"></div>
+            <p>Scannen im Startbereich – ideal beim Vor-Ort-Treffen.</p>
+          </div>
+          <div class="sharebtns">
+            <button class="wa" id="obWa">In WhatsApp teilen</button>
+            <button id="obCopy">Einladungslink kopieren</button>
+          </div>
+          <div class="ob-spacer"></div>
+          <button class="cta go" id="obFinish">Weiter zum Board</button>
+          <div class="dots"><i></i><i></i><i class="on"></i></div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- EINLADUNGS-VORSCHAU (was der eingeladene Freund sieht) -->
+    <div class="invite" id="invite">
+      <div class="invite-top"><span class="dot"></span><b>Lauffreund</b>
+        <button class="x" id="inviteClose">✕</button></div>
+      <div class="ib">
+        <div id="ivLive">
+        <p class="who">Lena hat dich eingeladen</p>
+        <h3>Verfolge Lenas Rennen live.</h3>
+        <div class="livecard">
+          <div class="lc-top">
+            <div class="av" style="background:#E0683D">LE</div>
+            <div class="nm" style="flex:1"><b>Lena</b><small id="ivSub">läuft gerade</small></div>
+            <div class="eta"><b id="ivEta">~33 Min</b><small>bis Ziel</small></div>
+          </div>
+          <div class="bar"><span id="ivBar" style="width:31%"></span></div>
+          <div class="barlab"><span>SportScheck RUN München · 10 km</span><span id="ivKm">km 3,1</span></div>
+        </div>
+        <button class="cta go" id="ivCheer">📣 Lena anfeuern</button>
+        <div class="hint">Feuere jetzt an – Lena bekommt deinen Gruß direkt aufs Handy.</div>
+        <div class="ob-spacer" style="min-height:14px"></div>
+        <button class="cta stop" id="ivJoin">Lenas Crew beitreten</button>
+        </div>
+
+        <div id="ivJoinForm" style="display:none">
+          <p class="who">Nur noch dein Name</p>
+          <h3>Tritt Lenas Crew bei.</h3>
+          <div class="field">
+            <label>Wie sollen dich die anderen sehen?</label>
+            <input id="joinName" class="linkbox" style="border-radius:11px" placeholder="Dein Name oder Spitzname">
+          </div>
+          <div class="hint" style="text-align:left;margin:0 2px">Du verfolgst danach Lena und ihre ganze Crew – und feuerst mit einem Tap an.</div>
+          <div class="ob-spacer" style="min-height:16px"></div>
+          <button class="cta go" id="joinConfirm">Beitreten</button>
+          <button class="ob-skip" id="joinBack" style="width:100%">Zurück</button>
+        </div>
+
+        <div id="ivDone" style="display:none">
+          <div class="ob-spacer" style="min-height:20px"></div>
+          <div style="text-align:center;font-size:40px">🎉</div>
+          <h3 style="text-align:center" id="joinDoneTitle">Du bist dabei!</h3>
+          <p class="lead" style="text-align:center;margin:0 auto 10px" id="joinDoneText">Du verfolgst jetzt Lena und ihre Crew. Beim nächsten Rennen bist du live dabei.</p>
+          <div class="ob-spacer"></div>
+          <button class="cta go" id="ivToBoard">Zum Board</button>
+        </div>
+      </div>
+    </div>
+
     <div class="top">
       <div>
         <h1 id="topTitle">SportScheck RUN München</h1>
@@ -374,12 +559,28 @@ document.getElementById('copyBtn').onclick=()=>{
   navigator.clipboard&&navigator.clipboard.writeText(inviteText);toast('Einladungslink kopiert');
 };
 const roster=document.getElementById('crewRoster');
-[['Tom','#3D6FE0'],['Lena','#E0683D'],['Jonas','#7A48C7'],['Du','#3B8FE5']].forEach(([n,c])=>{
-  const d=document.createElement('div');d.className='row';
-  d.innerHTML=`<div class="av" style="background:${c}">${n.slice(0,2).toUpperCase()}</div>
-    <div class="nm"><b>${n}</b><small>${n==='Du'?'das bist du':'in der Crew'}</small></div>`;
-  roster.appendChild(d);
-});
+let crewMembers=[
+  {name:'Tom',  color:'#3D6FE0', note:'läuft den Halbmarathon'},
+  {name:'Lena', color:'#E0683D', note:'läuft die 10 km'},
+  {name:'Jonas',color:'#7A48C7', note:'läuft die 5 km'},
+];
+function renderRoster(){
+  roster.innerHTML='';
+  crewMembers.forEach(m=>{
+    const d=document.createElement('div');d.className='row';
+    d.innerHTML=`<div class="av" style="background:${m.color}">${m.name.slice(0,2).toUpperCase()}</div>
+      <div class="nm"><b>${m.name}</b><small>${m.note}</small></div>`;
+    roster.appendChild(d);
+  });
+}
+renderRoster();
+function joinCrew(name){
+  name=(name||'').trim()||'Du';
+  const palette=['#15A0A6','#C7488F','#5B8A2B','#2B6AA6','#B0632A'];
+  crewMembers.push({name, color:palette[crewMembers.length % palette.length], note:'du · feuerst an'});
+  renderRoster();
+  return name;
+}
 
 // nav
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{
@@ -396,6 +597,122 @@ renderCrew();
 setTimeout(renderMarkers,60);
 setInterval(()=>{renderCrew();renderMarkers();},1000);
 window.addEventListener('resize',renderMarkers);
+
+// ===== ONBOARDING =====
+const ob=document.getElementById('ob');
+function obShow(id){
+  document.querySelectorAll('.ob-step').forEach(s=>s.classList.toggle('active',s.id===id));
+  ob.querySelector('.ob-body').scrollTop=0;
+}
+// „Weiter/Zurück"-Knöpfe mit data-go
+ob.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{
+  const target=b.dataset.go;
+  // Anfeuerer überspringen den Läufer-Schritt (ob-3)
+  if(target==='ob-3' && obRole==='fan'){ prepInvite(); obShow('ob-4'); return; }
+  if(target==='ob-4'){ prepInvite(); }
+  obShow(target);
+}));
+
+// Rolle wählen
+let obRole=null;
+document.querySelectorAll('#roleChoice button').forEach(b=>b.onclick=()=>{
+  obRole=b.dataset.role;
+  document.querySelectorAll('#roleChoice button').forEach(x=>x.classList.toggle('sel',x===b));
+  const nx=document.getElementById('roleNext');
+  nx.disabled=false; nx.style.opacity='1';
+});
+
+// Läufer-Rennenauswahl im Onboarding (aus derselben Liste)
+const obSel=document.getElementById('obRaceSelect');
+races.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' · '+r.city;obSel.appendChild(o);});
+obSel.value='ssr-muenchen';
+// Ziel-Umschalter im Onboarding
+let obGoalMode='km';
+const obGoalVal=document.getElementById('obGoalVal'), obGoalUnit=document.getElementById('obGoalUnit');
+document.querySelectorAll('#obGoalSeg button').forEach(b=>b.onclick=()=>{
+  obGoalMode=b.dataset.mode;
+  document.querySelectorAll('#obGoalSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  if(obGoalMode==='km'){obGoalUnit.textContent='km';obGoalVal.placeholder='z. B. 10';}
+  else{obGoalUnit.textContent='Std:Min';obGoalVal.placeholder='z. B. 0:50';}
+  obGoalVal.value='';
+});
+
+// Einladungs-Schritt vorbereiten (Text je nach Rolle, QR einmalig)
+let obQrDone=false;
+function prepInvite(){
+  const t=document.getElementById('obInviteTitle'), l=document.getElementById('obInviteLead');
+  if(obRole==='fan'){
+    t.textContent='Hol deine Freunde dazu';
+    l.textContent='Verfolgt gemeinsam – teile den Link mit den anderen, die mitfiebern wollen.';
+  }else{
+    t.textContent='Hol deine Laufgruppe rein';
+    l.textContent='Teile den Link in eurem Gruppenchat oder lass vor Ort scannen. Wer beitritt, landet direkt auf eurem Board.';
+  }
+  if(!obQrDone){
+    new QRCode(document.getElementById('obQr'),{text:inviteText,width:130,height:130,colorDark:'#16202E',colorLight:'#ffffff'});
+    obQrDone=true;
+  }
+}
+const waText=encodeURIComponent('Lauf mit uns bei Lauffreund mit – verfolg mein Rennen live: '+inviteText);
+document.getElementById('obWa').onclick=()=>{ window.open('https://wa.me/?text='+waText,'_blank'); };
+document.getElementById('obCopy').onclick=()=>{ navigator.clipboard&&navigator.clipboard.writeText(inviteText); toast('Einladungslink kopiert'); };
+
+// Onboarding abschließen -> in die App
+document.getElementById('obFinish').onclick=()=>{
+  if(obRole==='runner'){
+    // Auswahl in „Mein Rennen" übernehmen
+    sel.value=obSel.value; renderRaceCard();
+    const wantTime=obGoalMode==='time';
+    document.querySelector('#goalSeg button[data-mode="'+(wantTime?'time':'km')+'"]').click();
+    goalVal.value=obGoalVal.value;
+    toast('Alles bereit – am Renntag Tracking aktivieren');
+  }else{
+    toast('Willkommen – so sieht deine Crew live aus');
+  }
+  ob.classList.add('hidden');
+};
+
+// ===== EINLADUNGS-VORSCHAU (Sicht des eingeladenen Freundes) =====
+const invite=document.getElementById('invite');
+document.getElementById('obPreviewBtn').onclick=()=>{ ivView('live'); document.getElementById('joinName').value=''; invite.classList.add('show'); };
+document.getElementById('inviteClose').onclick=()=>invite.classList.remove('show');
+document.getElementById('ivCheer').onclick=()=>toast('📣 Anfeuern an Lena gesendet');
+
+// Beitritts-Flow: Live -> Namensform -> Fertig
+const ivLive=document.getElementById('ivLive');
+const ivJoinForm=document.getElementById('ivJoinForm');
+const ivDone=document.getElementById('ivDone');
+function ivView(which){
+  ivLive.style.display   = which==='live' ? 'block':'none';
+  ivJoinForm.style.display = which==='form' ? 'block':'none';
+  ivDone.style.display   = which==='done' ? 'block':'none';
+  invite.querySelector('.ib').scrollTop=0;
+}
+document.getElementById('ivJoin').onclick=()=>ivView('form');
+document.getElementById('joinBack').onclick=()=>ivView('live');
+document.getElementById('joinConfirm').onclick=()=>{
+  const name=joinCrew(document.getElementById('joinName').value);   // wird echtes Crew-Mitglied
+  document.getElementById('joinDoneTitle').textContent=name+', du bist dabei!';
+  document.getElementById('joinDoneText').textContent='Du stehst jetzt in Lenas Crew und verfolgst sie und die anderen live. Beim nächsten Rennen bist du sofort dabei.';
+  ivView('done');
+  toast('Willkommen in der Crew, '+name);
+};
+document.getElementById('ivToBoard').onclick=()=>{
+  invite.classList.remove('show');
+  ob.classList.add('hidden');
+  document.querySelector('[data-screen="s-crew"]').click();   // „Wer ist dabei" zeigt den neuen Beitritt
+};
+
+// die kleine Live-Karte in der Vorschau mitlaufen lassen (nutzt Lenas Zustand)
+setInterval(()=>{
+  if(!invite.classList.contains('show')) return;
+  const lena=runners.find(r=>r.id==='lena'); if(!lena) return;
+  const s=state(lena);
+  document.getElementById('ivBar').style.width=Math.round(s.frac*100)+'%';
+  document.getElementById('ivKm').textContent='km '+s.km.toFixed(1);
+  document.getElementById('ivEta').textContent=s.done?'im Ziel':'~'+fmtEta(s.remain);
+  document.getElementById('ivSub').textContent=s.done?'im Ziel':'läuft gerade · '+fmtPace(s.pace)+'/km';
+},1000);
 </script>
 </body>
 </html>
