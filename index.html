@@ -18,12 +18,9 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0}
-  body{background:linear-gradient(180deg,#E7F0FB 0%,#EDEFF3 48%,#E4EAF2 100%);color:var(--ink);font-family:var(--body);
+  body{background:var(--page);color:var(--ink);font-family:var(--body);
     min-height:100vh;display:flex;flex-direction:column;align-items:center;
     padding:24px 16px 40px;line-height:1.5;-webkit-font-smoothing:antialiased}
-  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-  .bg svg{position:absolute;inset:0;width:100%;height:100%}
-  .brand,.phone,.note{position:relative;z-index:1}
   .brand{display:flex;align-items:center;gap:9px;margin-bottom:14px;color:var(--ink)}
   .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--go)}
   .brand b{font-family:var(--display);font-weight:600;letter-spacing:-.01em;font-size:17px}
@@ -130,37 +127,6 @@
 </style>
 </head>
 <body>
-  <div class="bg" aria-hidden="true">
-    <svg viewBox="0 0 1200 820" preserveAspectRatio="xMidYMax slice">
-      <defs>
-        <radialGradient id="glow" cx="50%" cy="42%" r="60%">
-          <stop offset="0%" stop-color="#FFFFFF" stop-opacity=".65"/>
-          <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-      <ellipse cx="600" cy="360" rx="560" ry="380" fill="url(#glow)"/>
-      <!-- Tempo-Streifen -->
-      <g stroke="#3B8FE5" stroke-linecap="round" fill="none">
-        <line x1="150" y1="360" x2="560" y2="360" stroke-width="12" opacity=".10"/>
-        <line x1="120" y1="420" x2="640" y2="420" stroke-width="16" opacity=".13"/>
-        <line x1="200" y1="480" x2="600" y2="480" stroke-width="12" opacity=".09"/>
-        <line x1="260" y1="536" x2="560" y2="536" stroke-width="10" opacity=".08"/>
-      </g>
-      <!-- Boden-Schatten -->
-      <ellipse cx="832" cy="742" rx="132" ry="17" fill="#1B3A5B" opacity=".10"/>
-      <!-- Läufer -->
-      <g transform="translate(610,183) scale(2.2)" opacity=".20"
-         fill="#1B3A5B" stroke="#1B3A5B" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="100" cy="42" r="21"/>
-        <path d="M92 66 L122 150" fill="none" stroke-width="31"/>
-        <path d="M92 66 L138 78 L126 44" fill="none" stroke-width="20"/>
-        <path d="M92 66 L58 84 L74 110" fill="none" stroke-width="20"/>
-        <path d="M122 150 L162 182 L150 244" fill="none" stroke-width="25"/>
-        <path d="M122 150 L98 210 L54 216" fill="none" stroke-width="25"/>
-      </g>
-    </svg>
-  </div>
-
   <div class="brand"><span class="dot"></span><b>Lauffreund</b><span>Prototyp · Testversion</span></div>
 
   <div class="phone">
