@@ -11,7 +11,7 @@
   :root{
     --ink:#16202E; --muted:#6B7480; --line:#E7EAEF;
     --page:#EDEFF3; --surface:#FFFFFF; --surface-2:#F6F7F9;
-    --go:#15B85B; --go-ink:#0B7D3C;
+    --go:#3B8FE5; --go-ink:#1E6FBF;
     --live:#FF5247; --live-bg:#FFE9E7;
     --display:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
     --body:ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -76,6 +76,14 @@
   .field label{font-size:12px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px}
   select,.linkbox{width:100%;font-family:var(--body);font-size:14px;padding:11px 12px;
     border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
+  .seg{display:flex;gap:6px;margin-bottom:8px}
+  .seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px;
+    font-family:var(--body);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer}
+  .seg button.on{background:var(--go);color:#fff;border-color:var(--go)}
+  .goalinput{display:flex;align-items:center;gap:9px}
+  .goalinput input{flex:1;font-family:var(--body);font-size:14px;padding:11px 12px;
+    border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
+  .goalinput .unit{font-size:13px;color:var(--muted);min-width:64px}
   .racecard{border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:6px}
   .racecard b{font-size:14px}
   .racecard small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
@@ -138,7 +146,7 @@
             <path id="course" d="M24,176 C70,150 60,96 120,92 C180,88 168,40 232,44 C290,48 300,120 356,96"
                   fill="none" stroke="#CBD2DC" stroke-width="6" stroke-linecap="round"/>
             <path d="M24,176 C70,150 60,96 120,92 C180,88 168,40 232,44 C290,48 300,120 356,96"
-                  fill="none" stroke="#15B85B" stroke-width="6" stroke-linecap="round"
+                  fill="none" stroke="#3B8FE5" stroke-width="6" stroke-linecap="round"
                   stroke-dasharray="6 10" opacity=".35"/>
             <circle cx="24" cy="176" r="5" fill="#16202E"/>
             <circle cx="356" cy="96" r="6" fill="#FF5247"/>
@@ -156,6 +164,17 @@
           <select id="raceSelect"></select>
         </div>
         <div class="racecard" id="raceCard"></div>
+        <div class="field" style="margin-top:14px">
+          <label>Dein Ziel</label>
+          <div class="seg" id="goalSeg">
+            <button type="button" data-mode="km" class="on">Kilometer</button>
+            <button type="button" data-mode="time">Zeit</button>
+          </div>
+          <div class="goalinput">
+            <input id="goalVal" inputmode="decimal" placeholder="z. B. 10">
+            <span class="unit" id="goalUnit">km</span>
+          </div>
+        </div>
         <div class="count">
           <div class="lab">Start in</div>
           <div class="big" id="countdown">14:00</div>
@@ -209,6 +228,7 @@ let runners=[
 ];
 
 const races=[
+  {id:'freitagstreff', name:'Freitagstreff', date:'freitags', city:'Lauftreff', dist:'ca. 10 km'},
   {id:'berlin-marathon', name:'BMW Berlin-Marathon', date:'27.09.2026', city:'Berlin', dist:'42,195 km'},
   {id:'ssr-berlin', name:'SportScheck RUN Berlin', date:'17.10.2026', city:'Berlin', dist:'5 / 10 / 21,1 km'},
   {id:'ssr-koeln', name:'SportScheck RUN Köln', date:'11.09.2026', city:'Köln', dist:'5 / 10 / 21,1 km'},
@@ -224,14 +244,21 @@ let t0=Date.now();
 function fmtPace(s){const m=Math.floor(s/60),sec=Math.round(s%60);return m+':'+String(sec).padStart(2,'0');}
 function fmtEta(s){s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
   return h>0?h+':'+String(m).padStart(2,'0')+' h':m+' Min';}
+function fmtClock(s){s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+  return h>0?h+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'):m+':'+String(sec).padStart(2,'0');}
 
 function state(r){
   const elapsed=r.started*60 + (Date.now()-t0)/1000;       // Sekunden unterwegs
-  const km=Math.min(TOTAL, elapsed/r.pace);
   const jitter=r.active?(Math.sin(Date.now()/4000+r.pace)*6):0;
   const pace=r.pace+jitter;
-  const remain=(TOTAL-km)*pace;
-  return {km, pace, remain, frac:km/TOTAL, done:km>=TOTAL};
+  if(r.goalType==='time'){                                 // Ziel = Zeit
+    const goal=r.goalSec||3600;
+    return {mode:'time', elapsed, goalSec:goal, km:elapsed/pace, pace,
+            remain:goal-elapsed, frac:Math.min(1,elapsed/goal), done:elapsed>=goal};
+  }
+  const total=r.goalKm||TOTAL;                             // Ziel = Kilometer (Standard)
+  const km=Math.min(total, elapsed/pace);
+  return {mode:'km', km, total, pace, remain:(total-km)*pace, frac:km/total, done:km>=total};
 }
 
 function renderCrew(){
@@ -250,9 +277,19 @@ function renderCrew(){
     }else{
       const s=state(r);
       row.className='row';
+      let sub, etaBig, etaSmall;
+      if(s.mode==='time'){
+        sub=`${fmtClock(s.elapsed)} · ${fmtPace(s.pace)}/km`;
+        etaBig=s.done?'Ziel erreicht':'~'+fmtEta(s.remain);
+        etaSmall=s.done?'fertig':'bis Ziel-Zeit';
+      }else{
+        sub=`km ${s.km.toFixed(1)}${r.goalKm?' / '+s.total:''} · ${fmtPace(s.pace)}/km`;
+        etaBig=s.done?'Im Ziel':'~'+fmtEta(s.remain);
+        etaSmall=s.done?'fertig':'bis Ziel';
+      }
       row.innerHTML=`<div class="av" style="background:${r.color}">${initials(r.name)}</div>
-        <div class="nm"><b>${r.name}</b><small>km ${s.km.toFixed(1)} · ${fmtPace(s.pace)}/km</small></div>
-        <div class="eta"><b>${s.done?'Im Ziel':'~'+fmtEta(s.remain)}</b><small>${s.done?'fertig':'bis Ziel'}</small></div>`;
+        <div class="nm"><b>${r.name}</b><small>${sub}</small></div>
+        <div class="eta"><b>${etaBig}</b><small>${etaSmall}</small></div>`;
     }
     list.appendChild(row);
   });
@@ -268,8 +305,9 @@ function renderMarkers(){
     const x=(pt.x/380)*rect.width, y=(pt.y/208)*rect.height;
     const m=document.createElement('div');
     m.className='marker';m.style.left=x+'px';m.style.top=y+'px';
+    const tag=s.mode==='time'?`${Math.round(s.elapsed/60)} Min`:`km ${s.km.toFixed(0)}`;
     m.innerHTML=`<div class="pin" style="background:${r.color}">${initials(r.name)}</div>
-      <div class="tag">${r.name} · km ${s.km.toFixed(0)}</div>`;
+      <div class="tag">${r.name} · ${tag}</div>`;
     mapEl.appendChild(m);
   });
 }
@@ -288,13 +326,38 @@ setInterval(()=>{ if(cd>0){cd--;} const m=Math.floor(cd/60),s=cd%60;
   document.getElementById('countdown').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 },1000);
 
+// Ziel-Umschalter Kilometer / Zeit
+let goalMode='km';
+const goalVal=document.getElementById('goalVal');
+const goalUnit=document.getElementById('goalUnit');
+document.querySelectorAll('#goalSeg button').forEach(b=>b.onclick=()=>{
+  goalMode=b.dataset.mode;
+  document.querySelectorAll('#goalSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  if(goalMode==='km'){goalUnit.textContent='km';goalVal.placeholder='z. B. 10';}
+  else{goalUnit.textContent='Std:Min';goalVal.placeholder='z. B. 0:50';}
+  goalVal.value='';
+});
+
+function readGoal(){                         // liest Eingabe -> {goalType, goalKm|goalSec}
+  const v=(goalVal.value||'').trim();
+  if(goalMode==='time'){
+    let sec;
+    if(v.includes(':')){const[h,m]=v.split(':');sec=(parseInt(h)||0)*3600+(parseInt(m)||0)*60;}
+    else{sec=(parseFloat(v)||0)*60;}         // reine Zahl = Minuten
+    return {goalType:'time', goalSec:sec>0?sec:3600};
+  }
+  const km=parseFloat(v.replace(',','.'));
+  return {goalType:'km', goalKm:km>0?km:10};
+}
+
 const meBtn=document.getElementById('trackBtn');
 meBtn.onclick=()=>{
   const me=runners.find(r=>r.id==='me');
   if(!me){
-    runners.push({id:'me',name:'Du',color:'#15B85B',pace:312,started:0.2,active:true});
+    const g=readGoal();
+    runners.push(Object.assign({id:'me',name:'Du',color:'#3B8FE5',pace:312,started:0.2,active:true},g));
     meBtn.textContent='Tracking beenden';meBtn.className='cta stop';
-    toast('Tracking aktiv – du bist jetzt auf dem Board');
+    toast(g.goalType==='time'?'Tracking aktiv – Ziel '+fmtEta(g.goalSec):'Tracking aktiv – Ziel '+g.goalKm+' km');
     renderCrew();renderMarkers();
     document.querySelector('[data-screen="s-board"]').click();
   }else{
@@ -311,7 +374,7 @@ document.getElementById('copyBtn').onclick=()=>{
   navigator.clipboard&&navigator.clipboard.writeText(inviteText);toast('Einladungslink kopiert');
 };
 const roster=document.getElementById('crewRoster');
-[['Tom','#3D6FE0'],['Lena','#E0683D'],['Jonas','#7A48C7'],['Du','#15B85B']].forEach(([n,c])=>{
+[['Tom','#3D6FE0'],['Lena','#E0683D'],['Jonas','#7A48C7'],['Du','#3B8FE5']].forEach(([n,c])=>{
   const d=document.createElement('div');d.className='row';
   d.innerHTML=`<div class="av" style="background:${c}">${n.slice(0,2).toUpperCase()}</div>
     <div class="nm"><b>${n}</b><small>${n==='Du'?'das bist du':'in der Crew'}</small></div>`;
